@@ -13,7 +13,7 @@ int main(void)
 
 	while (1)
 	{
-		if(button_debounce(GREEN_BUTTON))
+		if(button_debounce(RED_BUTTON))
 		{
 			//gpio_set(GPIOA, GPIO5);
 			gpio_clear(GPIOA, GPIO5);

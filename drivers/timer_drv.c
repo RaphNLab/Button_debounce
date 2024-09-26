@@ -56,7 +56,7 @@ void timer_debounce_config(void)
 	nvic_enable_irq(NVIC_TIM3_IRQ);
 
 	timer_set_prescaler(TIM3, 24000);
-	timer_set_period(TIM3, 20);
+	timer_set_period(TIM3, 10);
 	timer_set_mode(TIM3, TIM_CR1_CKD_CK_INT, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
 	timer_enable_irq(TIM3, TIM_DIER_UIE);
 }

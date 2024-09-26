@@ -28,9 +28,10 @@
  * Static data declaration
  *
 */
-bool_t button_state = FALSE;
 bool_t debounce_delay_elapsed = FALSE;
 enum button_type bt_type;
+enum button_state bt_state = INVALID_STATE;
+
 /**
  * Private function prototypes
  *
@@ -61,13 +62,19 @@ bool_t button_debounce(enum button_type bt)
 	bool_t ret_val = FALSE;
 	if(debounce_delay_elapsed && (bt == RED_BUTTON))
 	{
-		debounce_delay_elapsed = FALSE;
-		ret_val = TRUE;
+		if(bt_state == RED_BUTTON_RELEASED)
+		{
+			debounce_delay_elapsed = FALSE;
+			ret_val = TRUE;
+		}
 	}
 	else if(debounce_delay_elapsed && (bt == GREEN_BUTTON))
 	{
-		debounce_delay_elapsed = FALSE;
-		ret_val = TRUE;
+		if(bt_state == GREE_BUTTON_RELEASED)
+		{
+			debounce_delay_elapsed = FALSE;
+			ret_val = TRUE;
+		}
 	}
 	return ret_val;
 }
@@ -84,17 +91,15 @@ void exti9_5_isr(void)
 	{
 		exti_reset_request(EXTI8);
 		timer_enable_counter(TIM3);
-		debounce_delay_elapsed = FALSE;
-		button_state = TRUE;
 		bt_type = RED_BUTTON;
+		bt_state = RED_BUTTON_PRESSED;
 	}
 	else if (exti_get_flag_status(EXTI9) == EXTI9)
 	{
 		exti_reset_request(EXTI9);
 		timer_enable_counter(TIM3);
-		debounce_delay_elapsed = FALSE;
-		button_state = FALSE;
 		bt_type = GREEN_BUTTON;
+		bt_state = GREEN_BUTTON_PRESSED;
 	}
 	else
 	{
@@ -113,24 +118,22 @@ void tim3_isr(void)
 		{
 		case RED_BUTTON:
 			// Check if the button has been released
-			if (gpio_get(GPIOA, BUTTON_RED))
+			if (gpio_get(GPIOA, BUTTON_RED) && (bt_state == RED_BUTTON_PRESSED))
 			{
 				debounce_delay_elapsed = TRUE;
-
+				bt_state = RED_BUTTON_RELEASED;
 				/* Disable timer for next trigger*/
 				timer_disable_counter(TIM3);
-				//timer_disable_irq(TIM3, TIM_DIER_UIE);
 			}
 			break;
 		case GREEN_BUTTON:
 			// Check if the button has been released
-			if (gpio_get(GPIOA, BUTTON_GREEN))
+			if (gpio_get(GPIOA, BUTTON_GREEN)  && (bt_state == GREEN_BUTTON_PRESSED))
 			{
 				debounce_delay_elapsed = TRUE;
-
+				bt_state = GREE_BUTTON_RELEASED;
 				/* Disable timer for next trigger*/
 				timer_disable_counter(TIM3);
-				//timer_disable_irq(TIM3, TIM_DIER_UIE);
 			}
 			break;
 		default:

@@ -21,6 +21,15 @@ enum button_type
 	RED_BUTTON
 };
 
+enum button_state
+{
+	GREEN_BUTTON_PRESSED = 0,
+	GREE_BUTTON_RELEASED,
+	RED_BUTTON_PRESSED,
+	RED_BUTTON_RELEASED,
+	INVALID_STATE
+};
+
 void button_config(void);
 bool_t button_debounce(enum button_type bt);
 
